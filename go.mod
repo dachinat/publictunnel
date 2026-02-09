@@ -1,4 +1,4 @@
-module github.com/dachi-pa/publictunnel
+module github.com/dachinat/publictunnel
 
 go 1.25.6
 
