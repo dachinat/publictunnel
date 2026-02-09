@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dachi-pa/publictunnel/internal/protocol"
+	"github.com/dachinat/publictunnel/internal/protocol"
 	"github.com/gorilla/websocket"
 )
 

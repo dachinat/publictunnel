@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/dachi-pa/publictunnel/internal/client"
+	"github.com/dachinat/publictunnel/internal/client"
 )
 
 func main() {
