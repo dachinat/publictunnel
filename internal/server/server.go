@@ -35,8 +35,10 @@ var upgrader = websocket.Upgrader{
 }
 
 type ClientConn struct {
-	conn *websocket.Conn
-	mu   sync.Mutex
+	conn        *websocket.Conn
+	mu          sync.Mutex
+	RemoteAddr  string
+	ConnectedAt time.Time
 }
 
 func (c *ClientConn) WriteJSON(v interface{}) error {
@@ -92,6 +94,10 @@ func (s *TunnelServer) handleRequest(w http.ResponseWriter, r *http.Request) {
 			s.handleWebSocket(w, r)
 			return
 		}
+		if r.URL.Path == "/tunnels" {
+			s.handleTunnelsList(w, r)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("PublicTunnel Server is running. Use the client to connect."))
 		return
@@ -135,7 +141,11 @@ func (s *TunnelServer) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		subdomain = uuid.New().String()[:8]
 	}
 
-	client := &ClientConn{conn: conn}
+	client := &ClientConn{
+		conn:        conn,
+		RemoteAddr:  r.RemoteAddr,
+		ConnectedAt: time.Now(),
+	}
 
 	s.clientsMu.Lock()
 	if _, exists := s.clients[subdomain]; exists {
@@ -271,4 +281,29 @@ func (s *TunnelServer) proxyToClient(subdomain string, w http.ResponseWriter, r 
 	case <-time.After(30 * time.Second):
 		http.Error(w, "Gateway timeout", http.StatusGatewayTimeout)
 	}
+}
+
+func (s *TunnelServer) handleTunnelsList(w http.ResponseWriter, r *http.Request) {
+	s.clientsMu.RLock()
+	defer s.clientsMu.RUnlock()
+
+	type tunnelResp struct {
+		Subdomain   string    `json:"subdomain"`
+		URL         string    `json:"url"`
+		RemoteAddr  string    `json:"remote_addr"`
+		ConnectedAt time.Time `json:"connected_at"`
+	}
+
+	tunnels := make([]tunnelResp, 0, len(s.clients))
+	for sub, client := range s.clients {
+		tunnels = append(tunnels, tunnelResp{
+			Subdomain:   sub,
+			URL:         fmt.Sprintf("http://%s.%s", sub, s.TunnelDomain),
+			RemoteAddr:  client.RemoteAddr,
+			ConnectedAt: client.ConnectedAt,
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(tunnels)
 }
