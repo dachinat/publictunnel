@@ -1,6 +1,6 @@
 # PublicTunnel
 
-<img height="175" src="https://publictunnel.com/logo-light.png" alt="PublicTunnel logo">
+<img height="175" src="https://publictunnel.com/logo-dark.png" alt="PublicTunnel logo">
 
 A lightweight tunneling service built in Golang - expose your local services to public.
 
