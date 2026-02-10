@@ -6,3 +6,4 @@ vendor/
 
 # Bin
 publictunnel-server
+/build/
