@@ -1,5 +1,3 @@
-[![Sponsor with PayPal](https://publictunnel.com/paypal.png)](https://paypal.me/dachina) [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/L4L01T5K7F)
-
 # PublicTunnel
 
 <img height="175" src="https://publictunnel.com/logo-dark.png" alt="PublicTunnel logo">
